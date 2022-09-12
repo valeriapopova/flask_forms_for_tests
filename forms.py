@@ -11,7 +11,7 @@ class RequestForm(Form):
     apiendpoint = StringField('apiendpoint')
     loop_count = IntegerField('loop_count', widget=NumberInput(min=1))
     number_of_threads = IntegerField('number_of_threads', widget=NumberInput(min=1))
-    body = StringField('body')
+    data = StringField('data')
     submit = SubmitField('Send')
 
 

@@ -42,8 +42,8 @@ def get_request():
             def fetch(url):
                 try:
                     response = requests.get(url, stream=True)
-                    print(response)
-                    return [response.status_code, response.json()]
+                    print(response.text)
+                    return [response.status_code]
                 except requests.exceptions.RequestException as e:
                     print(e)
                     return e
@@ -75,19 +75,15 @@ def post_request():
             apiendpoint = request.form['apiendpoint']
             loop_count = request.form['loop_count']
             number_of_threads = request.form['number_of_threads']
-            data = request.form['body']
+            data = request.form['data']
             start_time = datetime.now()
+ 
             urls = [apiendpoint] * int(number_of_threads)
-
-            data = {
-                    "master_product_id": data,
-                }
 
             def fetch(url):
                 try:
                     response = requests.post(url, json=data, stream=True)
-                    print(response.decode('utf-8'))
-                    return [response.status_code, response.json()]
+                    return [response.status_code]
                 except requests.exceptions.RequestException as e:
                     # print(e)
                     return e
