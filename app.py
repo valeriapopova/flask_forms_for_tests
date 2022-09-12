@@ -1,7 +1,8 @@
+import json
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
-from flask import Flask, render_template, request, Response, redirect, jsonify
+from flask import Flask, render_template, request, Response, redirect, jsonify, make_response
 from werkzeug.exceptions import BadRequestKeyError
 
 from config import Configuration
@@ -32,17 +33,19 @@ def get_request():
     form = RequestGetForm()
     if request.method == 'POST':
         try:
-            apiendpoint = request.form['ApiEndpoint']
-            loop_count = request.form['Loop count']
-            number_of_threads = request.form['Number of threads']
+            apiendpoint = request.form['apiendpoint']
+            loop_count = request.form['loop_count']
+            number_of_threads = request.form['number_of_threads']
             start_time = datetime.now()
             urls = [apiendpoint] * int(number_of_threads)
 
             def fetch(url):
                 try:
                     response = requests.get(url, stream=True)
+                    print(response)
                     return [response.status_code, response.json()]
                 except requests.exceptions.RequestException as e:
+                    print(e)
                     return e
 
             def some_func():
@@ -52,12 +55,12 @@ def get_request():
                         for i in range(int(loop_count)):
                             threads.append(executor.submit(fetch, url))
                     for task in as_completed(threads):
-                        print(task.result())
+                        t = task.result()
                 time_ = datetime.now() - start_time
-                return time_
+                return t, time_
 
             r = some_func()
-            return r
+            return make_response(render_template('post.html', r=r))
 
         except BadRequestKeyError:
             return Response("Пустое значение", 400)
@@ -69,26 +72,24 @@ def post_request():
     form = RequestForm()
     if request.method == 'POST':
         try:
-            apiendpoint = request.form['ApiEndpoint']
-            loop_count = request.form['Loop count']
-            number_of_threads = request.form['Number of threads']
-            master_product_id = request.form['master_product_id']
-            links = request.form['Links']
+            apiendpoint = request.form['apiendpoint']
+            loop_count = request.form['loop_count']
+            number_of_threads = request.form['number_of_threads']
+            data = request.form['body']
             start_time = datetime.now()
             urls = [apiendpoint] * int(number_of_threads)
-            data = [
-                {
-                    "master_product_id": master_product_id,
-                    "links": [
-                        links
-                    ]
-                }]
+
+            data = {
+                    "master_product_id": data,
+                }
 
             def fetch(url):
                 try:
                     response = requests.post(url, json=data, stream=True)
+                    print(response.decode('utf-8'))
                     return [response.status_code, response.json()]
                 except requests.exceptions.RequestException as e:
+                    # print(e)
                     return e
 
             def some_func():
@@ -98,11 +99,12 @@ def post_request():
                         for i in range(int(loop_count)):
                             threads.append(executor.submit(fetch, url))
                     for task in as_completed(threads):
-                        print(task.result())
+                        t = task.result()
                 time_ = datetime.now() - start_time
-                return time_
+                return t, time_
+
             r = some_func()
-            return r
+            return make_response(render_template('post.html', r=r))
 
         except BadRequestKeyError:
             return Response("Пустое значение", 400)

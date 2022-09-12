@@ -8,16 +8,15 @@ class MethodForm(Form):
 
 
 class RequestForm(Form):
-    apiendpoint = StringField('ApiEndpoint')
-    loop_count = IntegerField('Loop count', widget=NumberInput(min=1))
-    number_of_threads = IntegerField('Number of threads', widget=NumberInput(min=1))
-    master_product_id = IntegerField('master_product_id', widget=NumberInput(min=1))
-    links = StringField('Links')
+    apiendpoint = StringField('apiendpoint')
+    loop_count = IntegerField('loop_count', widget=NumberInput(min=1))
+    number_of_threads = IntegerField('number_of_threads', widget=NumberInput(min=1))
+    body = StringField('body')
     submit = SubmitField('Send')
 
 
 class RequestGetForm(Form):
-    apiendpoint = StringField('ApiEndpoint')
-    loop_count = IntegerField('Loop count', widget=NumberInput(min=1))
-    number_of_threads = IntegerField('Number of threads', widget=NumberInput(min=1))
+    apiendpoint = StringField('apiendpoint')
+    loop_count = IntegerField('loop_count', widget=NumberInput(min=1))
+    number_of_threads = IntegerField('number_of_threads', widget=NumberInput(min=1))
     submit = SubmitField('Send')
